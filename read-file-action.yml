@@ -1,0 +1,27 @@
+name: Read File Action
+
+on:
+  workflow_call:
+    inputs:
+      file_path:
+        required: true
+        type: string
+
+jobs:
+  read-file:
+    runs-on: ubuntu-latest
+    outputs:
+      casa: ${{ steps.readfile.outputs.casa }}
+      auto: ${{ steps.readfile.outputs.auto }}
+      edad: ${{ steps.readfile.outputs.edad }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Read file and set outputs
+        id: readfile
+        run: |
+          file_path="${{ inputs.file_path }}"
+          while IFS='=' read -r key value; do
+            echo "::set-output name=$key::$value"
+          done < "$file_path"

@@ -1,0 +1,30 @@
+name: Call Read File Action
+
+on:
+  workflow_dispatch:
+    inputs:
+      file_path:
+        description: 'Path to the file'
+        required: true
+        default: 'path/to/build_options2.txt'
+  push:
+    branches:
+      - dev-action-2
+
+jobs:
+  call-read-file:
+    if: github.ref == 'refs/heads/dev-action-2'
+    uses: owner/repo/.github/workflows/read-file-action.yml@main
+    with:
+      file_path: ${{ github.event.inputs.file_path }}
+    secrets:
+      token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+  use-outputs:
+    needs: call-read-file
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print outputs
+        run: |
+          echo "Casa: ${{ needs.call-read-file.outputs.casa }}"
+          echo "Auto: ${{ needs.call-read-file.outputs.auto }}"
+          echo "Edad: ${{ needs.call-read-file.outputs.edad }}"
